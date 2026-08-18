@@ -1,0 +1,53 @@
+name: Build & Sign Desktop App
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: macos-latest
+            platform: mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+      # Vendor Playwright Chromium for bundling into the app.
+      - run: npx playwright install chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+
+      # Build client + server, package, and code-sign (signing env
+      # is only applied when the matching secrets are set).
+      - run: npm run dist:electron
+        env:
+          VITE_AD_URL: ${{ secrets.VITE_AD_URL }}
+          VITE_LICENSE_URL: ${{ secrets.VITE_LICENSE_URL }}
+          LICENSE_PUBLIC_KEY: ${{ secrets.LICENSE_PUBLIC_KEY }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-build-${{ matrix.platform }}
+          path: release/
+          if-no-files-found: warn

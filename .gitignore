@@ -1,0 +1,53 @@
+node_modules/
+build/
+dist/
+release/
+coverage/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Secrets and per-machine state (never commit)
+# Runtime data (chapters, configs, trackers, logs)
+data/
+
+# Developer session/debug state (browser profiles, keys, debug logs)
+shared/
+
+# Private dev notes / probe scripts (never commit)
+memory.md
+rules.md
+Automation.md
+implementation_plan.md
+test_scrape.py
+scripts/
+
+# Legacy Python projects (old tool version)
+legacy/
+
+# Root log files
+server*.log
+srv-*.log
+server_error*.log
+stderr*.txt
+stdout*.txt
+delete_run.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Agent screenshots
+.agent-screenshots/
