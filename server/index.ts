@@ -10,7 +10,6 @@ import expressWs from 'express-ws';
 import compression from 'compression';
 import * as path from 'path';
 import * as fs from 'fs';
-import { createServer as createViteServer } from 'vite';
 
 import { loadNovelsRegistry, saveNovelsRegistry, loadNovelConfig, saveNovelConfig, ensureWorkspaceDirectories, WORKSPACE_ROOT } from './core/config';
 import { loadTracker, saveTrackerAtomic } from './core/tracker';
@@ -62,6 +61,16 @@ const metrics = {
 export async function createApp() {
   const app = express();
   const wsInstance = expressWs(app);
+  // ponytail: a bind failure (port busy) emits 'error' on the ws server too, which
+  // otherwise crashes the process before the http-server fallback can retry.
+  wsInstance.getWss().on('error', (err: any) => {
+    if (err && err.code === 'EADDRINUSE') return;
+    logger.error(`WebSocket server error: ${err?.message}`);
+  });
+
+  // ponytail: fresh installs have no workspace yet; create it at boot so healthz
+  // and first-use both work before any novel is registered.
+  try { fs.mkdirSync(WORKSPACE_ROOT, { recursive: true }); } catch {}
 
   app.set('trust proxy', false);
   app.use(express.json({ limit: '512kb' }));
@@ -222,6 +231,7 @@ export async function createApp() {
   // Vite / static
   // ==========================================
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true, watch: { ignored: ['**/data/**', '**/shared/browser_profile/**', '**/legacy/**', '**/node_modules/**'] } },
       appType: 'spa',

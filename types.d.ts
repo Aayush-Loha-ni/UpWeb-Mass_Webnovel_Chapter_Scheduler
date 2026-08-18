@@ -2,6 +2,7 @@ declare module 'express-ws' {
   import { Express } from 'express';
   interface WsInstance {
     app: Express & { ws: (route: string, handler: (ws: any, req: any) => void) => void };
+    getWss(): any;
   }
   function expressWs(app: Express): WsInstance;
   export default expressWs;

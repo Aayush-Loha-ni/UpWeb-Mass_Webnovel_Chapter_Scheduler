@@ -67,16 +67,20 @@
   "build": {
     "appId": "com.webnovel.automation",
     "productName": "Webnovel Automation",
-    "description": "Desktop app for webnovel authors to manage and automate publishing across Inkstone (Webnovel.com) and Patreon.",
     "directories": {
-      "out": "release"
+      "output": "release"
     },
     "files": [
       "dist/**",
       "electron/**",
-      "package.json"
+      "package.json",
+      "!node_modules/playwright-core/.local-browsers/**"
     ],
     "extraResources": [
+      {
+        "from": "dist",
+        "to": "dist"
+      },
       {
         "from": "node_modules/playwright-core/.local-browsers",
         "to": "playwright"

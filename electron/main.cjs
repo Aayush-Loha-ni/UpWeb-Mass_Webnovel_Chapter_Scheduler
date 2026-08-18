@@ -17,7 +17,7 @@ const path = require('path');
 const http = require('http');
 const { spawn } = require('child_process');
 
-const PORT = process.env.PORT || '3000';
+let PORT = process.env.PORT || '3000';
 const isDev = process.env.ELECTRON_DEV === '1';
 
 let devChild = null;
@@ -73,8 +73,8 @@ if (!app.requestSingleInstanceLock()) {
       process.env.NODE_ENV = process.env.NODE_ENV || 'production';
       process.env.ELECTRON_RUN = '1';
       process.env.DIST_DIR = process.resourcesPath
-        ? path.join(process.resourcesPath, 'dist')
-        : path.join(__dirname, '..', 'dist');
+        ? process.resourcesPath
+        : path.join(__dirname, '..');
       if (process.resourcesPath) {
         // ponytail: bundled Playwright Chromium lives here (set via PLAYWRIGHT_BROWSERS_PATH so chromium.launch() finds it)
         process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(process.resourcesPath, 'playwright');
@@ -83,7 +83,23 @@ if (!app.requestSingleInstanceLock()) {
       const serverModule = require(path.join(__dirname, '..', 'dist', 'server.cjs'));
       const { createApp, gracefulShutdown } = serverModule;
       const { app: exApp } = await createApp();
-      exApp.listen(Number(PORT), '127.0.0.1');
+      // ponytail: same port-fallback the dev entry has; a busy 3000 must not kill a packaged app
+      let port = Number(PORT);
+      for (let attempt = 0; attempt < 10; attempt++) {
+        port = Number(PORT) + attempt;
+        try {
+          await new Promise((resolve, reject) => {
+            const srv = exApp.listen(port, '127.0.0.1');
+            srv.once('listening', () => resolve(srv));
+            srv.once('error', (err) => { srv.close(); reject(err); });
+          });
+          break;
+        } catch (err) {
+          if (err.code !== 'EADDRINUSE' || attempt === 9) throw err;
+        }
+      }
+      if (port !== Number(PORT)) console.log(`[packaged] port ${PORT} busy, bound to ${port}`);
+      PORT = String(port);
 
       app.on('before-quit', (event) => {
         event.preventDefault();
@@ -114,6 +130,8 @@ if (!app.requestSingleInstanceLock()) {
       autoUpdater.on('update-downloaded', () => console.log('[updater] update downloaded; will install on restart'));
       autoUpdater.checkForUpdatesAndNotify().catch(() => {});
     }
+  }).catch((err) => {
+    console.error('[packaged] boot failed:', err);
   });
 
   app.on('window-all-closed', () => {
