@@ -10,7 +10,7 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.3',
     info: {
-      title: 'Webnovel Automation API',
+      title: 'UpWeb API',
       version: '1.0.0',
       description: 'API for managing novels, chapters, publishing automation, and browser sessions.',
     },
@@ -169,7 +169,7 @@ const options: swaggerJsdoc.Options = {
 export function setupSwagger(app: Express): void {
   const swaggerSpec = swaggerJsdoc(options);
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: 'Webnovel Automation API',
+    customSiteTitle: 'UpWeb API',
     customCss: '.swagger-ui .topbar { display: none }',
   }));
   app.get('/api/docs.json', (_req, res) => {

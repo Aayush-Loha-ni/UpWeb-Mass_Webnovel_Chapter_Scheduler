@@ -222,7 +222,7 @@ class EmailNotificationClient extends NotificationClient {
       await this.transporter.sendMail({
         from: this.config.email_from,
         to: this.config.email_to,
-        subject: `Webnovel Automation: ${subject}`,
+        subject: `UpWeb: ${subject}`,
         text: message,
       });
     } catch {

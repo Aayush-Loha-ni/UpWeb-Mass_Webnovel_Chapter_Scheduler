@@ -1,4 +1,4 @@
-# Webnovel Automation
+# UpWeb
 
 Desktop app for webnovel authors to manage and automate publishing across Inkstone (Webnovel.com) and Patreon.
 
@@ -176,8 +176,8 @@ Swagger documentation available at `/api/docs` when the server is running.
 ## Docker
 
 ```bash
-docker build -t webnovel-automation .
-docker run -p 3000:3000 -v ./data:/app/data webnovel-automation
+docker build -t upweb .
+docker run -p 3000:3000 -v ./data:/app/data upweb
 ```
 
 ## Development

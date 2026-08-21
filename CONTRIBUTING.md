@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to Webnovel Automation!
+Thanks for your interest in contributing to UpWeb!
 
 ## How to Contribute
 
@@ -16,7 +16,7 @@ Thanks for your interest in contributing to Webnovel Automation!
 
 ```bash
 git clone <your-fork>
-cd webnovel-automation
+cd upweb
 npm install
 npx playwright install chromium --with-deps
 npm run dev

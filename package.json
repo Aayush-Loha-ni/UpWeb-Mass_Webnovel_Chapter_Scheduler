@@ -1,5 +1,5 @@
 {
-  "name": "webnovel-automation",
+  "name": "upweb",
   "version": "1.0.0-beta.1",
   "description": "Desktop app for webnovel authors to manage and automate publishing across Inkstone (Webnovel.com) and Patreon.",
   "type": "module",
@@ -66,7 +66,7 @@
   },
   "build": {
     "appId": "com.webnovel.automation",
-    "productName": "Webnovel Automation",
+    "productName": "UpWeb",
     "directories": {
       "output": "release"
     },
@@ -106,7 +106,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Webnovel Automation"
+      "shortcutName": "UpWeb"
     }
   }
 }

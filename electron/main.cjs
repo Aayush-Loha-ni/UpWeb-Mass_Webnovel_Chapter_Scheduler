@@ -1,5 +1,5 @@
 /**
- * Electron main process for the Webnovel Automation desktop app.
+ * Electron main process for the UpWeb desktop app.
  *
  * Responsibilities:
  *  - Resolve per-user paths (workspace, bundled assets, Playwright browsers)
